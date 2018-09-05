@@ -1,0 +1,236 @@
+#include <stdio.h>
+#include <stdlib.h> // rand()
+#include <stdbool.h>
+#include <time.h>
+//#include <chrono>
+//#include <iostream>
+
+#define TF 9999
+#define MAX 9999
+
+//#define tempo_incio  t = clock(); auto start = std::chrono::high_resolution_clock::now();  posicao=v.Busca_Exaustiva(elem);
+//#define tempo_fim auto end = std::chrono::high_resolution_clock::now(); std::chrono::duration<double> diff = end-start;
+//#define tempo_msg std::cout << "\n Tempo necessario para executar : " << diff.count() << " s\n"; t = clock() - t; printf ("Demorou %d clicks (%f Segundos).\n",t,((double)t)/CLOCKS_PER_SEC);
+
+class VETOR{
+      public:
+            int tl;
+            long int vetor[TF];
+            bool ordenado;
+	     public:
+            void cria();
+            void exibe();
+            void ordena_cresce();
+            int Busca_Exaustiva(int elem);
+            int Busca_Sequencial(int elem);
+            int Busca_Binaria(int elem);
+            int Binaria_Recursiva(int elem,int inicio,int fim);
+};
+
+void VETOR::cria() // este cria pertence C! classe vetor -- CONSTRUTOR
+{
+     srand(time(NULL));
+     tl=TF;
+     for(int i=0;i<tl;i++)
+         vetor[i]=rand()%MAX;
+     ordenado=false;
+     //vetor[49998]=-1;
+
+}
+
+void VETOR::exibe() // este exibe pertence C! classe vetor
+{
+     int i;
+     for(i=0;i<tl;i++)
+         printf("\n vetor[%2d]=%3d",i,vetor[i]);
+     if(ordenado)
+        printf("\n vetor ordenado \n\n");
+     else
+         printf("\n desordenado \n\n");
+}
+
+int VETOR::Busca_Exaustiva(int elem) // este Busca_Exaustiva pertence C! classe vetor
+{
+	int i=0;
+	while((elem != vetor[i]) && (i < tl))
+	      i++;
+    if((i<tl)&&(elem==vetor[i]))
+        return i;
+    else
+        return -1;
+
+}
+
+int VETOR::Busca_Sequencial(int elem) // este Busca_Sequencial pertence C! classe vetor
+{
+    int i=0;
+	while((elem > vetor[i]) && (i < tl))
+	      i++;
+
+    if((i<tl)&&(elem==vetor[i]))
+       return i;
+    else
+       return -1;
+}
+void VETOR::ordena_cresce()
+{
+     int i,fim;
+     long int aux;
+     for(fim=tl;fim>0;fim--)
+         for(i=0;i<fim;i++){
+             if(vetor[i]>vetor[i+1]){
+                aux=vetor[i+1];
+                vetor[i+1]=vetor[i];
+                vetor[i]=aux;
+             }
+         }
+    ordenado=true;
+}
+
+int VETOR::Busca_Binaria(int elem)
+{
+
+    int inicio,fim,meio;
+    inicio = 0;
+    fim=tl-1;
+    meio=(inicio+fim)/2;
+
+    while((elem != vetor[meio]) && (inicio < fim )){
+          if(elem > vetor[meio])
+             inicio = meio+1; // ja foi visto que esse meio nao eh == num
+          else  fim = meio; // aqui usa o meio , pois sim.
+          meio= (inicio+fim)/2;
+    }
+    if(elem>vetor[meio])
+       return meio+1;
+    else return meio;
+}
+
+int VETOR::Binaria_Recursiva(int elem,int inicio,int fim)
+{
+ 	int meio;
+    if(inicio>fim)
+       return meio;
+    else{
+		 meio=(inicio+fim)/2;
+		 if(elem==vetor[meio])
+		    return meio;
+         		   else if(elem < vetor[meio])
+          		     Binaria_Recursiva(elem,inicio,meio-1);
+			 			else
+						   Binaria_Recursiva(elem,meio+1,fim);
+		   }
+}
+
+int main()
+{
+    clock_t t;
+    time_t tempoi,tempof;
+    float diffe;
+
+    VETOR v= VETOR();
+    int opc=0,elem,posicao;
+    while(opc!=8){
+          printf("\n [1] Gerar/Cria duh Vetor");
+          printf("\n [2] exibe o vetor");
+          printf("\n [3] ordenar o vetor");
+          printf("\n [4] Busca exaustiva com veto_desor");
+          printf("\n [5] Busca sequencial com vetor_order");
+          printf("\n [6] Busca binarioa com vetor_ordenado");
+          printf("\n [7] Busca binarioa com vetor_ordenado");
+          printf("\n [8] Sair.");
+          printf("\n opc = ");
+          scanf("%d",&opc);
+
+          switch(opc){
+                 case 1:
+                      v.cria();
+                      printf("\n # Vetor Criando #");
+                 break;
+                 case 2:
+                      v.exibe();
+                 break;
+                 case 3:
+				 	  t = clock(); //
+				 	  tempoi=time(NULL);//
+				 	  
+                      v.ordena_cresce();
+                      
+                      tempof=time(NULL);//
+                       t = clock()-t; //
+                      diffe=difftime(tempof,tempoi); //
+                      printf("\n Demorou %f segundos com vetor de %d numeros",diffe,TF);
+                     
+                      printf ("\n Demorou %d clicks (%f Segundos).\n",t,((double)t)/CLOCKS_PER_SEC);
+                      
+                      printf("\n vetor desordado");
+
+                 break;
+                 case 4:
+
+                      printf("\n Entre com o ElementO - \n Numero : ");
+                      scanf("%d",&elem);
+
+                     posicao=v.Busca_Exaustiva(elem);
+                     
+
+                     if(posicao==-1)
+                       printf("\n Nao encontrado ");
+                      else
+                        printf("\n encontrou na posicao %d",posicao);
+                   
+                 
+                 break;
+                 case 5:
+                      printf("\n ## VETOR DEVE ESTA ORDENADO ## \n Entre com o Elemento\n Numero : ");
+                      scanf("%d",&elem);
+					  
+
+                      if (!v.ordenado)
+                          printf("\n Nao foi possivel continuar - Vetor esta desordenado");
+                      else{
+                           posicao=v.Busca_Sequencial(elem);
+                           if(posicao==-1)
+                              printf("\n Nao encontrou");
+                           else
+                              printf("\n Encontrou na Posicao %d",posicao);
+                           }
+
+					break;
+                case 6:
+                      printf("\n ## VETOR DEVE ESTA ORDENADO ## \n Entre com o Elemento\n Numero : ");
+                      scanf("%d",&elem);
+                     
+                      if (!v.ordenado)
+                          printf("\n Nao foi possivel continuar - Vetor esta desordenado");
+                      else{
+                           posicao=v.Busca_Binaria(elem);
+                           if(elem==v.vetor[posicao])
+                              printf("\n Encontrou na Posicao %d",posicao);
+                           else
+                              printf("\n Nao achou");
+                           }
+                          
+                 break;
+                 case 7:
+				 	  printf("\n ## VETOR DEVE ESTA ORDENADO ## \n Entre com o Elemento\n Numero : ");
+				 	  scanf("%d",&elem);
+				 	  
+				 	  posicao=v.Binaria_Recursiva(elem,0,v.tl-1);
+				 	  
+				 	  if (!v.ordenado)
+                          printf("\n Nao foi possivel continuar - Vetor esta desordenado");
+                      else{
+				 	       if(elem==v.vetor[posicao])
+                              printf("\n Encontrou na Posicao %d",posicao);
+                           else
+                              printf("\n Nao achou %d, mas a posicao ideal eh %d",elem,posicao);
+              }   
+                      break;
+         }
+
+    }
+    printf("\n g \n ");
+    system("pause");
+	return 0;
+}
