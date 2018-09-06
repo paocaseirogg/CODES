@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct funcionario{
+      char nome[10];
+      float salario;
+      int idade;
+};
+
+void carrega(struct funcionario vet[10],int &tl){
+  tl=0;
+  char nome[10];
+  int idade;
+  float salario;
+  FILE *arq = fopen("empresa.txt","r");
+  if(arq==NULL)
+    printf("Error,Nao foi possivel abrir\n");
+  else{
+    while(!feof(arq)){
+          fscanf(arq,"%s %f %d\n",nome,&salario,&idade);
+          strcpy(vet[tl].nome,nome);
+          vet[tl].salario=salario;
+          vet[tl].idade=idade;
+          tl++;
+      }
+    fclose(arq);
+    }
+}
+
+void exibe(struct funcionario vetor[10],int tl){
+  int i;
+  for(i=0;i<tl;i++)
+    printf("\n %d Nome=%s Salario=Yen %5.2f Idade=%d",i,vetor[i].nome,vetor[i].salario,vetor[i].idade);
+}
+
+int busca(struct funcionario vetor[10],int tl,char nome[10]){
+  int pos=-1,i;
+  for(i=0;i<tl;i++){
+    if(strcmp(vetor[i].nome,nome)==0)
+      pos=i;
+  }
+  return pos;
+}
+
+void regravar(struct funcionario vetor[10],int tl){
+  FILE *f=fopen("empresa.txt","w");// abre
+  int i;
+  for(i=0;i<tl;i++)
+    fprintf(f,"%s %f %d\n",vetor[i].nome,vetor[i].salario,vetor[i].idade);
+    fclose(f);
+    printf("\n Regravado Com Sucesso!");
+}
+
+int insere(struct funcionario vet[10],char nome[10],float salario,int idade,int tl){
+  if(tl!=9){
+      strcpy(vet[tl].nome,nome);
+      vet[tl].salario=salario;
+      vet[tl].idade=idade;
+      printf("\n incluido na pos final");
+  return tl+1;
+  }else
+    return tl;
+}
+
+int main() {
+  int opc=0,tl=0,pos;
+  struct funcionario vet[10];
+  char nome[10];
+  float salario;
+  int idade;
+
+  while(opc!=7){
+    printf("\n\n[1] Le do arquivo para carrega o vetor");
+    printf("\n[2] exibe o vetor");
+    printf("\n[3]Consulta um funcionario(busca)");
+    printf("\n[4]Novo funcionario");
+    printf("\n[5]Remover funcionario do vetor");
+    printf("\n[6]Regravar e exibir autz");
+    printf("\n[7]Sair");
+    printf("\nopc :");
+    scanf("%d",&opc);
+    switch(opc){
+      case 1:
+            carrega(vet,tl);
+            printf("\n TL %d",tl);
+            break;
+      case 2:
+            exibe(vet,tl);
+            break;
+      case 3:
+            printf("\n Nome a Ser Procurado");
+            scanf("%s",&nome);
+            pos = busca(vet,tl,nome);
+            if(pos==-1)
+              printf("\n Nao encontrado");
+            else 
+              printf("Encontrou na Pos [%d] %s",pos,nome);
+              break;
+      case 4:
+            printf("\n Nome do funcionario :");
+            scanf("%s",&nome);
+            printf("\n Salario :");
+            scanf("%f",&salario);
+            printf("\n Idade :");
+            scanf("%d",&idade);
+            tl=insere(vet,nome,salario,idade,tl);
+            break;
+      case 6:
+            regravar(vet,tl);
+            break;
+    }
+    
+  }
+}
