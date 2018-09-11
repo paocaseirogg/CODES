@@ -1,0 +1,182 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
+
+struct linha{
+       int ddd;
+       char celular[9];
+};
+struct contato{
+	   char nome[10];
+	   struct linha fone;
+};
+
+class ARQX{
+	  public:
+	  		 struct contato vetor[50];
+	  		 int tl;
+	  		 char nomearquivo[20];
+	  		 ARQX();
+	       void carrega();
+	       void exibe();
+	       void busca(char nome[]);
+   			 void regravar();
+ 	     	 bool insere(struct contato novo);
+   			 bool remove(char nome[]);
+ 	     	 bool altera(char nome[]);
+};
+
+ARQX::ARQX(){
+			 tl=0;
+			 strcpy(nomearquivo,"agenda.txt");
+}
+			 		 
+void ARQX::carrega(){
+  		 FILE *arq = fopen("agenda.txt","r");
+  		 if(arq==NULL)
+          printf("Error,Nao foi possivel abrir\n");
+       else{
+           while(!feof(arq)){
+                   fscanf(arq,"%s %d %s\n",vetor[tl].nome,&vetor[tl].fone.ddd,vetor[tl].fone.celular);
+           tl++;
+      }
+    fclose(arq);
+    }
+}
+
+bool ARQX::insere(struct contato novo){
+		 if(tl!=50){
+			     printf("- Nome :");
+			     scanf("%s",&novo.nome);
+			     printf("\n DDD :");
+			     scanf("%d",&novo.fone.ddd);
+		       printf("- Numero :");
+		       scanf("%s",&novo.fone.celular);
+		       
+		       strcpy(vetor[tl].nome,novo.nome);
+					 vetor[tl].fone.ddd=novo.fone.ddd;
+					 strcpy(vetor[tl].fone.celular,novo.fone.celular);
+					 tl++;
+		       return true;
+		 }
+		 return false;
+}
+
+void ARQX::exibe(){
+    int i;
+    for(i=0;i<tl;i++)
+         printf("\n %d Nome= %-6s DDD=%-3d NUM=%-3s",i,vetor[i].nome,vetor[i].fone.ddd,vetor[i].fone.celular);
+}
+
+void ARQX::busca(char nome[10]){
+		 int i,n=0;
+		 for(i=0;i<tl;i++){
+			   if(strcmp(nome,vetor[i].nome)==0){
+			      printf("\n Nome : %s , Numero : [%d]%s",vetor[i].nome,vetor[i].fone.ddd,vetor[i].fone.celular);
+			      n++;
+						}
+			}
+     printf("\n Foi Encontrado %d Resultados ",n);
+     printf("\n");
+}
+bool ARQX::altera(char nome[]){
+		 int i,pos=-1;
+		 for(i=0;i<tl;i++){
+			   if(strcmp(nome,vetor[i].nome)==0){
+			      pos=i;
+			      break;
+			   }
+     }
+     if(pos!=-1){
+         printf("\n Novo DDD ");
+         scanf("%d",&vetor[pos].fone.ddd);
+ 		     printf("\n Novo Numero");
+				 scanf("%s",&vetor[pos].fone.celular);
+		 return true;
+		 }else
+		      printf("\n Nao encontrado");
+   return false;
+}
+
+void ARQX::regravar(){
+		 int i;
+		 FILE *arq = fopen(nomearquivo,"w");
+		 for(i=0;i<tl;i++){
+		     fprintf(arq,"%s %d %s\n",vetor[i].nome,vetor[i].fone.ddd,vetor[i].fone.celular);
+		 }
+		 printf("\n Arquivo Atualizado com Sucesso");
+		 fclose(arq);
+		 
+}
+
+bool ARQX::remove(char nome[10]){
+		 int i,pos=-1;
+		 for(i=0;i<tl;i++)
+			   if(strcmp(nome,vetor[i].nome)==0)
+			      pos=i;
+      
+		 for(i=pos;i<tl-1;i++){
+		 		 strcpy(vetor[i].nome,vetor[i+1].nome);
+			   vetor[i].fone.ddd=vetor[i+1].fone.ddd;
+			   strcpy(vetor[i].fone.celular,vetor[i+1].fone.celular);	 	      
+     }
+			tl--;				
+     if(pos!=-1)
+		   return true;
+     else
+     return false;
+}
+
+int main (){
+		 struct contato contatos;
+		 char buscanome[10];
+		 ARQX c = ARQX();
+		 int opc=0;
+		 
+		 while(opc!=7){
+		       printf("\n[1]Carrega o vetor\n");
+		       printf("[2]Exibe o Vetor\n");
+		       printf("[3]Insere novo contato\n");
+		       printf("[4]Busca Contato\n");
+	         printf("[5]Alterar Dados\n");
+	         printf("[6]Remove Contato\n");
+		       printf("[7]sair\n");
+		       printf("opc :");
+		       scanf("%d",&opc);
+		       printf("\n");
+		       switch(opc){
+	 						 case 1:
+							 			c.carrega();
+	 	           			break;
+	 	           case 2:
+					 					c.exibe();
+			 					    break;
+					     case 3:
+							 			if(c.insere(contatos))
+											 printf("Sucesso\n");
+									  else
+									     printf("Esta Cheio\n");
+							 			break;
+			         case 4:
+							 			printf("\n Digite o Nome : ");
+							 			scanf("%s",&buscanome);
+							 			c.busca(buscanome);
+							 			break;
+			         case 5:
+							 			printf("\n Digite o Nome : ");
+							 			scanf("%s",&buscanome);
+							 			c.altera(buscanome);
+			         case 6:
+							 			printf("\n Digite o Nome : ");
+							 			scanf("%s",&buscanome);
+							 			c.remove(buscanome);
+			         case 7:
+							 			c.regravar();
+							 			break;
+			      }
+    }
+		 printf("\n");
+		 system("pause");
+     return 0;
+		 }
